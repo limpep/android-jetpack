@@ -9,7 +9,7 @@ import uk.co.ergun.polat.jetpackslearning.model.AnimalApi
 import uk.co.ergun.polat.jetpackslearning.model.AnimalApiService
 
 @Module
-class ApiModule {
+open class ApiModule {
     private val BASE_URL = "https://us-central1-apis-4674e.cloudfunctions.net"
 
     @Provides
@@ -23,7 +23,7 @@ class ApiModule {
     }
 
     @Provides
-    fun provideAnimalApiService(): AnimalApiService {
+    open fun provideAnimalApiService(): AnimalApiService {
         return AnimalApiService()
     }
 }
