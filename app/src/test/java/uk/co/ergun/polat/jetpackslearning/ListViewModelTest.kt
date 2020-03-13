@@ -94,6 +94,51 @@ class ListViewModelTest {
         Assert.assertEquals(true, listViewModel.loadError.value)
     }
 
+    @Test
+    fun getKeySuccess(){
+        Mockito.`when`(prefs.getApiKey()).thenReturn(null)
+
+        val apiKey = ApiKey("OK", key)
+        val keySingle = Single.just(apiKey)
+
+        Mockito.`when`(animalService.getApiKey()).thenReturn(keySingle)
+
+        val animal = Animal("cow",
+            null,
+            null,
+            null,
+            null,
+            null,
+            null)
+
+        val animalsList = listOf(animal)
+
+        val testSingle = Single.just(animalsList)
+
+        Mockito.`when`(animalService.getAnimals(key)).thenReturn(testSingle)
+
+        listViewModel.refresh()
+
+        Assert.assertEquals(1, listViewModel.animals.value?.size)
+        Assert.assertEquals(false, listViewModel.loadError.value)
+        Assert.assertEquals(false, listViewModel.loading.value)
+    }
+
+    @Test
+    fun getKeyFailure() {
+        Mockito.`when`(prefs.getApiKey()).thenReturn(null)
+
+        val keySingle = Single.error<ApiKey>(Throwable())
+
+        Mockito.`when`(animalService.getApiKey()).thenReturn(keySingle)
+
+        listViewModel.refresh()
+
+        Assert.assertEquals(null, listViewModel.animals.value)
+        Assert.assertEquals(false, listViewModel.loading.value)
+        Assert.assertEquals(true, listViewModel.loadError.value)
+    }
+
     @Before
     fun setUpRxSchedulers() {
         val immediate = object : Scheduler() {
