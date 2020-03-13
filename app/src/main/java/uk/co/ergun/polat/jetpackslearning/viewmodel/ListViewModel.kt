@@ -7,10 +7,12 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.observers.DisposableSingleObserver
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import uk.co.ergun.polat.jetpackslearning.di.DaggerViewModelComponent
 import uk.co.ergun.polat.jetpackslearning.model.Animal
 import uk.co.ergun.polat.jetpackslearning.model.AnimalApiService
 import uk.co.ergun.polat.jetpackslearning.model.ApiKey
 import uk.co.ergun.polat.jetpackslearning.util.SharedPreferencesHelper
+import javax.inject.Inject
 
 class ListViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -22,11 +24,16 @@ class ListViewModel(application: Application) : AndroidViewModel(application) {
 
     private val disposable = CompositeDisposable()
 
-    private val apiService = AnimalApiService()
+    @Inject
+    lateinit var apiService: AnimalApiService
 
     private val prefs = SharedPreferencesHelper(getApplication())
 
     private var invalidApiKey = false
+
+    init {
+       DaggerViewModelComponent.create().inject(this)
+    }
 
 
     fun refresh() {
