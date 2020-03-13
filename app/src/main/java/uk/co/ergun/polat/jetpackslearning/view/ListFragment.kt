@@ -37,6 +37,7 @@ class ListFragment : Fragment() {
             animalList.visibility = View.GONE
         }
     }
+
     private val errorLiveDataObserver = Observer<Boolean> { isError ->
         listError.visibility = if(isError) View.VISIBLE else View.GONE
     }
