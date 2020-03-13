@@ -10,6 +10,7 @@ import io.reactivex.schedulers.Schedulers
 import uk.co.ergun.polat.jetpackslearning.model.Animal
 import uk.co.ergun.polat.jetpackslearning.model.AnimalApiService
 import uk.co.ergun.polat.jetpackslearning.model.ApiKey
+import uk.co.ergun.polat.jetpackslearning.util.SharedPreferencesHelper
 
 class ListViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -23,7 +24,25 @@ class ListViewModel(application: Application) : AndroidViewModel(application) {
 
     private val apiService = AnimalApiService()
 
+    private val prefs = SharedPreferencesHelper(getApplication())
+
+    private var invalidApiKey = false
+
+
     fun refresh() {
+        loading.value = true
+        invalidApiKey = false
+
+        val key = prefs.getApiKey()
+
+        if(key.isNullOrEmpty()) {
+            getKey()
+        } else {
+            getAnimals(key)
+        }
+    }
+
+    fun hardRefresh() {
         loading.value = true
         getKey()
     }
@@ -40,6 +59,7 @@ class ListViewModel(application: Application) : AndroidViewModel(application) {
                             loadError.value = true
                             loading.value = false
                         } else {
+                            prefs.saveApiKey(key.key)
                             getAnimals(key.key)
                         }
                     }
@@ -67,10 +87,15 @@ class ListViewModel(application: Application) : AndroidViewModel(application) {
                     }
 
                     override fun onError(e: Throwable) {
-                        e.printStackTrace()
-                        loading.value = false
-                        animals.value = null
-                        loadError.value = true
+                        if (!invalidApiKey) {
+                            invalidApiKey = true
+                            getKey()
+                        } else {
+                            e.printStackTrace()
+                            loading.value = false
+                            animals.value = null
+                            loadError.value = true
+                        }
                     }
                 })
         )
