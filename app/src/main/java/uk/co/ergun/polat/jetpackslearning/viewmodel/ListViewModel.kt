@@ -3,10 +3,11 @@ package uk.co.ergun.polat.jetpackslearning.viewmodel
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.observers.DisposableSingleObserver
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import uk.co.ergun.polat.jetpackslearning.di.AppModule
 import uk.co.ergun.polat.jetpackslearning.di.DaggerViewModelComponent
 import uk.co.ergun.polat.jetpackslearning.model.Animal
 import uk.co.ergun.polat.jetpackslearning.model.AnimalApiService
@@ -27,14 +28,18 @@ class ListViewModel(application: Application) : AndroidViewModel(application) {
     @Inject
     lateinit var apiService: AnimalApiService
 
-    private val prefs = SharedPreferencesHelper(getApplication())
+    @Inject
+    lateinit var prefs: SharedPreferencesHelper
 
     private var invalidApiKey = false
 
     init {
-       DaggerViewModelComponent.create().inject(this)
+        DaggerViewModelComponent
+            .builder()
+            .appModule(AppModule(getApplication()))
+            .build()
+            .inject(this)
     }
-
 
     fun refresh() {
         loading.value = true
@@ -42,7 +47,7 @@ class ListViewModel(application: Application) : AndroidViewModel(application) {
 
         val key = prefs.getApiKey()
 
-        if(key.isNullOrEmpty()) {
+        if (key.isNullOrEmpty()) {
             getKey()
         } else {
             getAnimals(key)
