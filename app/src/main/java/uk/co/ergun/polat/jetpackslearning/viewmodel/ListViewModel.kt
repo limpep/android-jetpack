@@ -8,7 +8,9 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.observers.DisposableSingleObserver
 import io.reactivex.schedulers.Schedulers
 import uk.co.ergun.polat.jetpackslearning.di.AppModule
+import uk.co.ergun.polat.jetpackslearning.di.CONTEXT_APP
 import uk.co.ergun.polat.jetpackslearning.di.DaggerViewModelComponent
+import uk.co.ergun.polat.jetpackslearning.di.TypeOfContext
 import uk.co.ergun.polat.jetpackslearning.model.Animal
 import uk.co.ergun.polat.jetpackslearning.model.AnimalApiService
 import uk.co.ergun.polat.jetpackslearning.model.ApiKey
@@ -29,6 +31,7 @@ class ListViewModel(application: Application) : AndroidViewModel(application) {
     lateinit var apiService: AnimalApiService
 
     @Inject
+    @field:TypeOfContext(CONTEXT_APP)
     lateinit var prefs: SharedPreferencesHelper
 
     private var invalidApiKey = false
@@ -58,7 +61,6 @@ class ListViewModel(application: Application) : AndroidViewModel(application) {
         loading.value = true
         getKey()
     }
-
 
     private fun getKey() {
         disposable.add(
