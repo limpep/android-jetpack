@@ -18,6 +18,7 @@ import uk.co.ergun.polat.jetpackslearning.di.AppModule
 import uk.co.ergun.polat.jetpackslearning.di.DaggerViewModelComponent
 import uk.co.ergun.polat.jetpackslearning.model.Animal
 import uk.co.ergun.polat.jetpackslearning.model.AnimalApiService
+import uk.co.ergun.polat.jetpackslearning.model.ApiKey
 import uk.co.ergun.polat.jetpackslearning.util.SharedPreferencesHelper
 import uk.co.ergun.polat.jetpackslearning.viewmodel.ListViewModel
 import java.util.concurrent.Executor
@@ -54,7 +55,7 @@ class ListViewModelTest {
     @Test
     fun getAnimalSuccess() {
         Mockito.`when`(prefs.getApiKey()).thenReturn(key)
-        
+
         val animal = Animal("cow",
             null,
             null,
@@ -73,6 +74,24 @@ class ListViewModelTest {
         Assert.assertEquals(1, listViewModel.animals.value?.size)
         Assert.assertEquals(false, listViewModel.loadError.value)
         Assert.assertEquals(false, listViewModel.loading.value)
+    }
+
+    @Test
+    fun getAnimalsFailure() {
+        Mockito.`when`(prefs.getApiKey()).thenReturn(key)
+
+        val testSingle = Single.error<List<Animal>>(Throwable())
+
+        val keySingle = Single.just(ApiKey("Ok", key))
+
+        Mockito.`when`(animalService.getAnimals(key)).thenReturn(testSingle)
+        Mockito.`when`(animalService.getApiKey()).thenReturn(keySingle)
+
+        listViewModel.refresh()
+
+        Assert.assertEquals(null, listViewModel.animals.value)
+        Assert.assertEquals(false, listViewModel.loading.value)
+        Assert.assertEquals(true, listViewModel.loadError.value)
     }
 
     @Before
