@@ -10,5 +10,6 @@
 - Navigation
 - Preference
 
-![](link-to-image)
-![](link-to-image)
+<img src="https://raw.githubusercontent.com/limpep/android-jetpack/master/screenshots/device-2020-03-13-215428.png" width="200" height="400" />
+
+<img src="https://raw.githubusercontent.com/limpep/android-jetpack/master/screenshots/device-2020-03-13-215447.png" width="200" height="400" />
